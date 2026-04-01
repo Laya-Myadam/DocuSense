@@ -1,40 +1,42 @@
-# DocuSense — Universal Document Intelligence
+# DocuSense — GenAI Universal Document Intelligence
 
-> AI-powered document analysis system that extracts insights, understands images, and answers questions from any complex PDF — in plain, simple English.
+> AI-powered document analysis system that dynamically extracts insights, understands images, and answers questions from any complex PDF — in plain, simple English without any manual effort.
 
 ---
 
 ## Screenshots
 
-<img width="1914" height="973" alt="DS-1" src="https://github.com/user-attachments/assets/49152b16-3757-459d-bb7f-2a0c840f9ff9" />
-<img width="1909" height="968" alt="DS-2" src="https://github.com/user-attachments/assets/c6f0e604-e867-4509-9827-a062abe2ce1b" />
-<img width="1912" height="957" alt="DS-3" src="https://github.com/user-attachments/assets/021859f7-4751-4b45-bde3-dc7c375082d9" />
-<img width="1908" height="974" alt="DS-4" src="https://github.com/user-attachments/assets/78a8cdea-571a-4a2e-ae5b-3a21a5e2d0ac" />
-<img width="1907" height="972" alt="DS-5" src="https://github.com/user-attachments/assets/fc30eb26-e18f-487a-a799-a00452d9c846" />
-<img width="1911" height="972" alt="DS-6" src="https://github.com/user-attachments/assets/def3eebc-41c3-490d-a319-2e1157535759" />
-<img width="1911" height="968" alt="DS-7" src="https://github.com/user-attachments/assets/f623dd3c-2727-4806-855c-7114f7e8c6b1" />
+<img width="1426" height="817" alt="Screenshot 2026-03-31 200727" src="https://github.com/user-attachments/assets/eaffb161-7e75-497c-a6b6-95c4557930b9" />
+<img width="1905" height="966" alt="Screenshot 2026-03-31 201249" src="https://github.com/user-attachments/assets/9eb31f06-b2a6-42bc-ae27-2167419f59ff" />
+<img width="1898" height="964" alt="Screenshot 2026-03-31 201300" src="https://github.com/user-attachments/assets/d3c52331-272c-4357-a248-d0c08514ff6f" />
+<img width="1900" height="961" alt="Screenshot 2026-03-31 201314" src="https://github.com/user-attachments/assets/5f860afd-6ae9-4646-acc3-2be9c6e62e38" />
+<img width="1904" height="963" alt="Screenshot 2026-03-31 201505" src="https://github.com/user-attachments/assets/11b15048-8d93-4c57-8c29-1a41a8c49a46" />
+<img width="1894" height="963" alt="Screenshot 2026-03-31 201518" src="https://github.com/user-attachments/assets/195dd222-f6b7-4b99-a477-d84aa37bfce0" />
 
 
 ---
 
 ## What Is DocuSense?
 
-DocuSense is a Retrieval-Augmented Generation (RAG) system built to eliminate the slow, manual process of reading through complex documents. Instead of spending hours reading financial contracts, construction specs, real estate agreements, or investment memos — you upload the PDF, and DocuSense extracts what matters, explains it simply, and lets you ask questions about it in plain English.
+DocuSense is a production-grade Retrieval-Augmented Generation (RAG) system built to eliminate the slow, manual process of reading through complex documents. Instead of spending hours reading financial contracts, construction specs, real estate agreements, or investment memos — you upload the PDF, and DocuSense dynamically discovers what topics are in it, extracts what matters, explains it in plain English, and lets you ask follow-up questions with full conversation memory.
 
-It works on any domain, understands both text and embedded images inside PDFs, and runs entirely from your local machine with a free Groq API for the language model.
+It works on any domain, understands both text and embedded images inside PDFs, runs on a free Groq API for the language model, and produces a downloadable PDF report of everything it found.
 
 ---
 
 ## Key Features
 
+- **Dynamic Section Discovery** — LLM reads the document first and identifies what sections actually exist in it, instead of using hardcoded templates
 - **Universal Domain Support** — works on Financial, Construction, Real Estate, Investment, Legal, and General documents
-- **Auto Domain Detection** — automatically identifies what type of document you uploaded using keyword scoring
-- **Plain English Explanations** — no jargon, no legalese — answers written like a friend explaining it to you
-- **Image Understanding** — extracts and describes charts, diagrams, photos, and floor plans embedded inside PDFs using computer vision
-- **Free Q&A Chat** — ask anything about your document and get grounded, accurate answers
-- **Multi-page PDF Support** — handles large, complex documents across dozens of pages
-- **Zero Hallucination Design** — the LLM is constrained to answer only from the document, never from general knowledge
-- **No API cost for embeddings** — vector search runs fully locally using HuggingFace
+- **LLM-Based Domain Detection** — sends the first 1000 characters to LLaMA3 to classify the document — no fragile keyword matching
+- **Plain English Explanations** — few-shot prompted answers in consistent, simple, non-jargon language
+- **Image Understanding** — extracts and describes charts, diagrams, photos, and floor plans embedded in PDFs using BLIP vision AI
+- **Conversational Q&A with Memory** — ask follow-up questions that reference previous answers — the system remembers the last 5 exchanges
+- **MMR Retrieval** — Maximal Marginal Relevance retrieval reduces redundant chunks and improves answer coverage
+- **Confidence Scoring** — every Q&A answer includes a High / Medium / Low confidence level based on vector similarity
+- **Multi-Document Comparison** — upload two PDFs and compare them on any topic side by side
+- **PDF Report Export** — download a professional report with all insights and Q&A from the session
+- **Zero Hallucination Design** — the LLM is strictly constrained to answer only from document context
 
 ---
 
@@ -54,8 +56,8 @@ It works on any domain, understands both text and embedded images inside PDFs, a
                │                                               │
        ┌───────▼────────┐                            ┌─────────▼────────┐
        │ Text Chunking   │                            │ Image Captioning  │
-       │ 800 chars,      │                            │ BLIP vision model │
-       │ 150 overlap     │                            │ → plain English   │
+       │ 1500 chars,     │                            │ BLIP vision model │
+       │ 200 overlap     │                            │ → plain English   │
        └───────┬────────┘                            └─────────┬────────┘
                │                                               │
                └───────────────────┬───────────────────────────┘
@@ -68,22 +70,28 @@ It works on any domain, understands both text and embedded images inside PDFs, a
                                    │
                         ┌──────────▼──────────┐
                         │   FAISS Vector Store  │
-                        │   (in-memory search)  │
+                        │   (MMR retrieval)     │
+                        │   k=6, fetch_k=20     │
                         └──────────┬──────────┘
                                    │
-                    ┌──────────────┴──────────────┐
-                    │                             │
-           ┌────────▼────────┐          ┌─────────▼────────┐
-           │  Auto Extract    │          │   Free Q&A Chat   │
-           │  Key Insights    │          │   (conversational)│
-           └────────┬────────┘          └─────────┬────────┘
-                    │                             │
-                    └──────────────┬──────────────┘
+              ┌────────────────────┼────────────────────┐
+              │                   │                    │
+    ┌─────────▼──────┐  ┌─────────▼──────┐  ┌─────────▼──────┐
+    │ Dynamic Section│  │  Conversational │  │ Multi-Document │
+    │ Discovery      │  │  Q&A + Memory   │  │ Comparison     │
+    └─────────┬──────┘  └─────────┬──────┘  └─────────┬──────┘
+              │                   │                    │
+              └────────────────────┬────────────────────┘
                                    │
                         ┌──────────▼──────────┐
                         │   Groq API           │
-                        │   LLaMA3-8B-8192     │
-                        │   Plain English Answer│
+                        │   LLaMA3.3-70B       │
+                        │   Few-Shot Prompted  │
+                        └──────────┬──────────┘
+                                   │
+                        ┌──────────▼──────────┐
+                        │   PDF Report Export  │
+                        │   (reportlab)        │
                         └─────────────────────┘
 ```
 
@@ -93,24 +101,65 @@ It works on any domain, understands both text and embedded images inside PDFs, a
 
 ### 1. Sentence Embeddings — `sentence-transformers/all-MiniLM-L6-v2`
 - **Purpose:** Converts text chunks into 384-dimensional vectors for semantic search
-- **Type:** Bi-encoder transformer, fine-tuned on sentence similarity tasks
-- **Size:** ~90MB
-- **Runs:** Locally on CPU — no API key, no cost
-- **Why this model:** Best balance of speed and accuracy for semantic search on CPU. Outperforms TF-IDF and BM25 for meaning-based retrieval.
+- **Type:** Bi-encoder transformer fine-tuned on sentence similarity tasks
+- **Size:** ~90MB — downloads once, cached locally
+- **Runs:** Fully local on CPU — no API key, no cost ever
+- **Why this model:** Best balance of speed and accuracy for semantic search on CPU. Significantly outperforms TF-IDF and BM25 for meaning-based retrieval.
 
 ### 2. Vision Model — `Salesforce/blip-image-captioning-base`
 - **Purpose:** Describes images embedded inside PDFs in plain English
-- **Type:** Vision-Language model (ViT image encoder + BERT text decoder)
-- **Size:** ~900MB
-- **Runs:** Locally on CPU — no API key, no cost
-- **Why this model:** BLIP (Bootstrapping Language-Image Pre-training) is specifically trained for image captioning. It handles charts, diagrams, photos, and floor plans accurately without needing GPU.
+- **Type:** Vision-Language model — ViT image encoder + BERT text decoder
+- **Size:** ~900MB — downloads once, cached locally
+- **Runs:** Fully local on CPU — no API key, no cost ever
+- **Why this model:** BLIP (Bootstrapping Language-Image Pre-training) is specifically trained for image captioning. Handles charts, diagrams, photos, and floor plans without needing a GPU. Images under 50x50px are automatically skipped as decorative.
 
-### 3. Language Model — `LLaMA3-8B-8192` via Groq API
-- **Purpose:** Reads retrieved document chunks and generates plain English answers
-- **Type:** Large Language Model, 8 billion parameters, 8192 token context window
+### 3. Language Model — `llama-3.3-70b-versatile` via Groq API
+- **Purpose:** Dynamic section discovery, domain classification, key info extraction, Q&A generation, document comparison
+- **Type:** Large Language Model — 70 billion parameters, 128K token context window
 - **Runs:** Groq cloud API — free tier, no credit card needed
-- **Why Groq:** Groq's LPU (Language Processing Unit) hardware makes LLaMA3 run extremely fast — responses in under 1 second. Free tier is generous enough for extensive testing and real use.
-- **Why LLaMA3-8B:** Strong instruction following, low hallucination rate, and excellent at summarizing and simplifying complex text.
+- **Why Groq:** Groq's LPU (Language Processing Unit) hardware runs LLaMA3.3 extremely fast — responses in under 1 second even for 70B. Free tier is generous for extensive use.
+- **Why LLaMA3.3-70B:** Significantly stronger than the older 8B model — better instruction following, more accurate extraction, lower hallucination rate, and handles complex few-shot prompts reliably.
+
+---
+
+## Prompting Strategy
+
+DocuSense uses a layered prompting approach across all modules:
+
+### Dynamic Section Discovery (new)
+Instead of hardcoded section templates, the LLM first reads a 3000-character sample of the document and returns a JSON of sections that actually exist:
+```
+Input: Document sample + "What topics exist in this document?"
+Output: {"Site Inspection Issues": "What issues were found during inspection?",
+         "Rebar Requirements": "What reinforcement specs are mentioned?", ...}
+```
+This means every document gets sections matched to its actual content — not a generic template.
+
+### Few-Shot Prompting (extraction + Q&A)
+Every extraction prompt includes 2 domain-specific examples showing the exact tone, length, and style expected:
+```
+Example 1:
+Question: What are the payment terms?
+Answer: The borrower must pay $200,000 over 5 years at 6.5% annual interest...
+
+Example 2:
+Question: What happens if payment is missed?
+Answer: A 2% late fee applies immediately. After 3 missed payments...
+
+Now answer: [real question from document]
+```
+This eliminates style inconsistency — answers are always 2-4 sentences, plain English, grounded in specific facts.
+
+### Zero-Shot Domain Classification
+Domain detection uses zero-shot prompting — the LLM classifies the document from a sample with no examples needed:
+```
+"What domain is this document from? Choose one:
+Financial, Construction, Real Estate, Investment, Legal, General.
+Reply with one word only."
+```
+
+### Conversation Memory
+The Q&A engine maintains a sliding window of the last 5 exchanges, injected into every new prompt so follow-up questions work correctly.
 
 ---
 
@@ -118,53 +167,69 @@ It works on any domain, understands both text and embedded images inside PDFs, a
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| UI | Streamlit | Web interface, file upload, chat |
-| PDF Reading | pdfplumber | Text extraction with layout awareness |
-| Image Extraction | pypdf | Pull raw image bytes from PDF pages |
+| UI | Streamlit | Web interface, file upload, chat, tabs |
+| PDF Text Reading | pdfplumber | Text extraction with layout awareness |
+| PDF Image Extraction | pypdf | Pull raw image bytes from PDF pages |
 | Vision AI | BLIP (HuggingFace Transformers) | Describe images in plain English |
-| Text Splitting | LangChain Text Splitters | Chunk documents intelligently |
-| Embeddings | sentence-transformers (HuggingFace) | Convert text to semantic vectors |
-| Vector Store | FAISS (Facebook AI) | Fast in-memory similarity search |
-| LLM | LLaMA3-8B via Groq API | Generate plain English answers |
-| Orchestration | LangChain | Chain retrieval and generation |
-| Environment | python-dotenv | Secure API key management |
+| Text Splitting | LangChain Text Splitters | Chunk documents at 1500 chars, 200 overlap |
+| Embeddings | sentence-transformers (HuggingFace) | Convert text to 384-dim semantic vectors |
+| Vector Store | FAISS (Facebook AI) | Fast in-memory MMR similarity search |
+| LLM | LLaMA3.3-70B via Groq API | All language tasks — free tier |
+| PDF Export | ReportLab | Generate downloadable analysis reports |
+| Environment | python-dotenv | Secure API key management via .env |
 
 ---
 
 ## Supported Domains
 
-| Domain | Auto-Detected By | Sections Extracted |
+| Domain | Detected By | Dynamic Sections From |
 |---|---|---|
-| Financial | loan, covenant, interest rate, lender, borrower... | Payment Terms, Default & Penalties, Key Covenants, Termination |
-| Construction | contractor, milestone, site, scope of work... | Scope of Work, Timeline, Penalty Clauses, Materials & Specs |
-| Real Estate | lease, tenant, property, rent, mortgage... | Property Details, Price & Payment, Lease Terms, Restrictions |
-| Investment | IRR, equity, fund, exit, investor... | Investment Terms, Returns & Projections, Risk Factors, Exit Strategy |
-| Legal | indemnification, arbitration, governing law... | Parties Involved, Obligations, Indemnification, Governing Law |
-| General | (fallback for any other document) | Main Purpose, Key Parties, Important Terms, Dates & Deadlines |
+| Financial | LLM classification | Actual clauses found in the document |
+| Construction | LLM classification | Actual specs, tasks, issues found |
+| Real Estate | LLM classification | Actual property, lease, restriction terms |
+| Investment | LLM classification | Actual fund terms, risks, projections |
+| Legal | LLM classification | Actual obligations, parties, jurisdiction |
+| General | LLM fallback | Any topics found in the document |
 
 ---
 
 ## Performance & Results
 
 ### Accuracy
-- **Clause Extraction Accuracy:** 90%+ on text-based PDFs with clear structure
-- **Domain Detection Accuracy:** Correct auto-detection on ~85% of documents tested
-- **Image Description Quality:** BLIP accurately describes charts, photos, and diagrams in most cases; struggles with very small or low-resolution images
-- **Hallucination Rate:** Near zero — the system is constrained to answer only from retrieved document chunks, never from model memory
+- **Clause Extraction Accuracy:** 90%+ on text-based PDFs
+- **Domain Detection:** LLM-based — handles edge cases like construction loans, legal real estate docs
+- **Dynamic Section Relevance:** Sections match actual document content — no more "Not mentioned" on 3 out of 4 hardcoded sections
+- **Hallucination Rate:** Near zero — LLM strictly constrained to retrieved context only
+- **Image Description Quality:** Accurate on charts, photos, diagrams; skips tiny/decorative images automatically
 
 ### Speed (approximate, on CPU)
 | Task | Time |
 |---|---|
 | PDF ingestion + chunking | 2–5 seconds |
-| Embedding generation (first run) | 10–30 seconds (model download ~90MB) |
-| Image description per image | 3–8 seconds per image on CPU |
-| Q&A response via Groq | Under 1 second |
-| Auto extraction (all sections) | 10–20 seconds total |
+| Embedding generation | 10–30 seconds (first run, then cached) |
+| LLM domain detection | Under 1 second (Groq) |
+| Dynamic section discovery | 1–2 seconds (Groq) |
+| Full key insight extraction (6 sections) | 10–15 seconds total |
+| Q&A response | Under 1 second (Groq) |
+| Image description per image (BLIP) | 3–8 seconds on CPU |
+| PDF report generation | 2–3 seconds |
 
 ### Effort Reduction
-- **Manual research effort reduced by ~40%** — users no longer need to read entire documents to find key clauses
-- **Time to first insight:** Under 30 seconds for a typical 10-page document
-- **Multi-domain coverage:** One system handles 6 different document types without any reconfiguration
+- Manual research effort reduced by ~40%
+- Time to first insight: under 30 seconds for a typical 10-page document
+- Sections are always relevant — no wasted space on "Not mentioned" entries
+- Follow-up questions work naturally due to conversation memory
+
+---
+
+## Application Tabs
+
+| Tab | What It Does |
+|---|---|
+| Key Insights | Dynamically discovers and extracts sections that actually exist in the document |
+| Ask Anything | Conversational Q&A with memory, MMR retrieval, and confidence scoring |
+| Compare Documents | Upload two PDFs and compare them on any topic side by side |
+| Export Report | Download a formatted PDF with all insights and Q&A from the session |
 
 ---
 
@@ -172,42 +237,51 @@ It works on any domain, understands both text and embedded images inside PDFs, a
 
 ```
 docusense/
-├── app.py                      ← Main Streamlit UI and routing
+├── app.py                      ← Main Streamlit UI — 4 tabs wired together
 ├── requirements.txt            ← All Python dependencies
-├── .env                        ← API keys (not committed to git)
-├── .gitignore                  ← Ignores venv, uploads, .env
+├── .env                        ← API keys (never commit this to git)
+├── .gitignore
 ├── README.md                   ← This file
 ├── SETUP_GUIDE.md              ← Step-by-step setup instructions
 ├── core/
 │   ├── __init__.py
-│   ├── ingestor.py             ← PDF reading, chunking, FAISS embedding
-│   ├── image_extractor.py      ← Image extraction and BLIP captioning
-│   ├── qa_engine.py            ← Conversational Q&A using Groq + FAISS
-│   ├── extractor.py            ← Domain-specific key info extraction
-│   └── detector.py             ← Auto domain detection via keyword scoring
+│   ├── ingestor.py             ← PDF reading, 1500-char chunking, FAISS embedding
+│   ├── image_extractor.py      ← Image extraction + BLIP captioning
+│   ├── detector.py             ← LLM-based domain classification (zero-shot)
+│   ├── extractor.py            ← Dynamic section discovery + few-shot extraction
+│   ├── qa_engine.py            ← MMR retrieval, memory, confidence, few-shot Q&A
+│   ├── comparator.py           ← Side-by-side multi-document comparison
+│   └── exporter.py             ← ReportLab PDF report generation
 └── data/
-    └── uploads/                ← Uploaded PDFs stored here at runtime
+    └── uploads/                ← PDFs stored here at runtime (gitignored)
 ```
 
 ---
 
 ## How RAG Works (Plain English)
 
-RAG stands for Retrieval-Augmented Generation. Here is exactly what happens when you upload a document:
+**Ingestion:**
+1. Every page is read — all text extracted, all images pulled out
+2. Images described by BLIP: "a bar chart showing quarterly revenue across four regions"
+3. Text split into 1500-character chunks with 200-character overlap so nothing at boundaries is lost
+4. Every chunk (text + image descriptions) converted to a 384-number vector fingerprint
+5. All vectors stored in FAISS in-memory search engine
 
-1. **Reading** — The PDF is opened page by page. All text is extracted. All embedded images are pulled out.
+**Dynamic Discovery:**
+6. LLM reads a broad document sample and identifies what sections actually exist
+7. Returns a JSON of section titles and targeted extraction questions
 
-2. **Understanding Images** — Each image is passed through the BLIP vision model which describes what it sees in plain English. A bar chart becomes: "a bar chart showing quarterly revenue across four regions."
+**Retrieval:**
+8. Each question converted to a vector
+9. FAISS runs MMR search — finds top 6 relevant chunks from 20 candidates, reducing redundancy
 
-3. **Chunking** — Text is split into overlapping chunks of 800 characters with 150 character overlap. Overlap ensures that sentences at chunk boundaries are not lost.
+**Generation:**
+10. Retrieved chunks + few-shot examples + question sent to LLaMA3.3-70B via Groq
+11. Answer comes back in under 1 second — plain English, consistent style, grounded in document
 
-4. **Embedding** — Every chunk (text and image descriptions) is converted into a vector — a list of 384 numbers that represents the meaning of that chunk. Similar meanings produce similar vectors.
-
-5. **Indexing** — All vectors are stored in FAISS, a high-speed similarity search engine built by Facebook AI.
-
-6. **Retrieval** — When you ask a question, your question is also converted into a vector. FAISS finds the 4 most similar chunks from the document.
-
-7. **Generation** — Those 4 chunks are sent to LLaMA3 via Groq along with your question and a system instruction to answer simply and only from the provided context. The answer comes back in under a second.
+**Memory:**
+12. Every Q&A exchange stored in a 5-exchange sliding window
+13. Next question includes previous context so follow-ups work naturally
 
 ---
 
@@ -220,7 +294,7 @@ python -m venv venv && venv\Scripts\activate
 # 2. Install all dependencies
 pip install -r requirements.txt
 
-# 3. Add your Groq API key to .env file
+# 3. Add your free Groq API key to .env
 echo GROQ_API_KEY=your-key-here > .env
 
 # 4. Run
@@ -236,38 +310,38 @@ Full detailed setup is in SETUP_GUIDE.md.
 | Service | Required | Cost | Get It At |
 |---|---|---|---|
 | Groq API | YES | Free | console.groq.com |
-| HuggingFace | NO | Free | Models download automatically |
-| OpenAI | NO | Optional upgrade | platform.openai.com |
+| HuggingFace models | NO | Free — auto download | Cached locally |
 
 ---
 
 ## Limitations
 
-- **Scanned PDFs** — pages that are photos of text (not real text) cannot be read without an OCR step. Use Adobe Acrobat or ilovepdf.com to OCR first.
-- **Very large PDFs** — documents over 100 pages may take longer to embed on first load.
-- **Handwritten text** — not supported by BLIP or pdfplumber.
-- **Password-protected PDFs** — remove the password before uploading.
-- **Image quality** — BLIP struggles with very small (under 50x50px), blurry, or low-contrast images. These are skipped automatically.
-- **Language** — optimized for English documents. Other languages will work partially but accuracy drops.
+- **Scanned PDFs** — image-only pages need OCR first. Use Adobe Acrobat or ilovepdf.com
+- **Very large PDFs** — 100+ pages take longer to embed on first load
+- **Handwritten text** — not supported
+- **Password-protected PDFs** — remove password before uploading
+- **Non-English documents** — works partially, accuracy drops significantly
+- **Complex charts** — BLIP describes them but may miss specific data values
 
 ---
 
 ## Future Improvements
 
 - OCR support for scanned documents using Tesseract
-- Multi-document comparison (diff two contracts side by side)
-- Export answers and extracted insights as PDF report
+- GPT-4o vision upgrade for higher quality chart/diagram understanding
 - Support for DOCX, XLSX, and PowerPoint files
-- GPT-4o vision upgrade for higher quality image understanding
-- User authentication and document history
+- User authentication and persistent document history
+- Streaming responses for real-time answer generation
+- Table extraction from PDFs as structured data
 
 ---
 
 ## Built With
 
 - [Streamlit](https://streamlit.io) — UI framework
-- [LangChain](https://langchain.com) — RAG orchestration
-- [FAISS](https://github.com/facebookresearch/faiss) — Vector similarity search
-- [Groq](https://groq.com) — Fast LLM inference
-- [HuggingFace](https://huggingface.co) — Embeddings and vision models
+- [LangChain](https://langchain.com) — RAG orchestration and text splitting
+- [FAISS](https://github.com/facebookresearch/faiss) — Vector similarity search by Facebook AI
+- [Groq](https://groq.com) — Ultra-fast LLM inference
+- [HuggingFace](https://huggingface.co) — Embeddings and BLIP vision model
 - [pdfplumber](https://github.com/jsvine/pdfplumber) — PDF text extraction
+- [ReportLab](https://www.reportlab.com) — PDF report generation
