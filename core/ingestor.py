@@ -35,14 +35,13 @@ def ingest_pdf(pdf_path: str):
     else:
         st.info("No embedded images found — processing text only.")
 
-    # 3. Validate
     if not all_documents:
         raise ValueError("Could not extract any content from this PDF.")
 
-    # 4. Chunk text documents only
+    # Fix 2: Larger chunks (1500 chars, 200 overlap) for better large doc handling
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=800,
-        chunk_overlap=150,
+        chunk_size=1500,
+        chunk_overlap=200,
         separators=["\n\n", "\n", ". ", " "]
     )
     text_docs = [d for d in all_documents if d.metadata["source"] == "text"]
@@ -50,7 +49,6 @@ def ingest_pdf(pdf_path: str):
     chunked_text = splitter.split_documents(text_docs)
     final_docs = chunked_text + image_docs
 
-    # 5. Embed into FAISS
     embeddings = HuggingFaceEmbeddings(
         model_name="sentence-transformers/all-MiniLM-L6-v2",
         model_kwargs={"device": "cpu"},

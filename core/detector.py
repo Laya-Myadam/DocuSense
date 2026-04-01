@@ -1,55 +1,53 @@
+import os
 import pdfplumber
-from collections import defaultdict
+from groq import Groq
 
-
-DOMAIN_KEYWORDS = {
-    "Financial": [
-        "interest rate", "loan", "repayment", "covenant", "default", "credit",
-        "lender", "borrower", "collateral", "debt", "payment schedule", "fee",
-        "principal", "maturity", "financial statement", "balance sheet",
-    ],
-    "Construction": [
-        "contractor", "subcontractor", "scope of work", "milestone", "completion",
-        "materials", "specifications", "site", "construction", "delay", "penalty",
-        "project schedule", "drawings", "architect", "engineering", "build",
-    ],
-    "Real Estate": [
-        "property", "lease", "tenant", "landlord", "rent", "mortgage",
-        "deed", "title", "zoning", "square feet", "premises", "occupancy",
-        "real estate", "purchase price", "closing", "escrow",
-    ],
-    "Investment": [
-        "investor", "fund", "equity", "irr", "return", "portfolio", "exit",
-        "valuation", "shares", "capital", "term sheet", "preferred stock",
-        "investment", "risk factor", "profit", "distribution",
-    ],
-    "Legal": [
-        "indemnification", "liability", "governing law", "arbitration", "jurisdiction",
-        "confidentiality", "non-disclosure", "intellectual property", "warranty",
-        "breach", "remedy", "termination", "force majeure", "agreement",
-    ],
-}
-
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+MODEL = "llama-3.1-8b-instant"
 
 def detect_domain(pdf_path: str) -> str:
     """
-    Reads the first 3 pages of a PDF and scores keyword matches
-    to determine the most likely domain.
+    Uses LLaMA3 via Groq to classify the document domain.
+    Sends first 1000 chars to the LLM — no hardcoded keywords.
     """
     text = ""
     with pdfplumber.open(pdf_path) as pdf:
         for page in pdf.pages[:3]:
             t = page.extract_text()
             if t:
-                text += t.lower()
+                text += t
+            if len(text) >= 1000:
+                break
 
-    scores = defaultdict(int)
-    for domain, keywords in DOMAIN_KEYWORDS.items():
-        for kw in keywords:
-            if kw.lower() in text:
-                scores[domain] += 1
-
-    if not scores or max(scores.values()) == 0:
+    sample = text[:1000].strip()
+    if not sample:
         return "General"
 
-    return max(scores, key=scores.get)
+    response = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a document classifier. Reply with exactly ONE word from the list provided. No explanation, no punctuation, just the word."
+            },
+            {
+                "role": "user",
+                "content": f"""What domain is this document from?
+Choose exactly one: Financial, Construction, Real Estate, Investment, Legal, General
+
+Document sample:
+{sample}
+
+Reply with one word only:"""
+            }
+        ],
+        max_tokens=5,
+        temperature=0,
+    )
+
+    result = response.choices[0].message.content.strip()
+    valid = ["Financial", "Construction", "Real Estate", "Investment", "Legal", "General"]
+    for v in valid:
+        if v.lower() in result.lower():
+            return v
+    return "General"
